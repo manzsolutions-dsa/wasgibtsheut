@@ -23,7 +23,8 @@ if ($res->is_success) {
    my $date = sprintf("%02d.%02d.%04d", $mday, ($mon+1), ($year+1900));
    my $string_small = $res->content;
    $string_small =~ s/[\r\n\t\f\v]+//g;
-   if ($string_small =~ qr/$date.*?<div>(.*?)<\/div>\s*<div>(.*?)<\/div>/) {
+   #print "$string_small\n";
+   if ($string_small =~ qr/$date.*?<span style="text-align: start;">(.*?)<\/span>\s*<br[^>]*>\s*<span style="text-align: start;">(.*?)<\/span>/) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
    }
    else {
@@ -62,12 +63,12 @@ if ($res->is_success) {
    my $text = $pdf->getPageText(1);
    $text =~ s/\s+/ /g;
    #print "$text\n";
-   if ($text =~ qr/Montag \- Freitag.*?$days[$wday].*?Men. I(.*?)Men. II(.*?)(${days[$wday - 1]}|Johannesgasse)/) {
+   if ($text =~ qr/Montag \- Freitag.*?$days[$wday].*?Men. I(.*?)Men. II(.*?)(${days[$wday + 1]}|Johannesgasse)/) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
    }
    else {
       $text =~ s/\s+//g;
-      if ($text =~ qr/Montag-Freitag.*?${days[$wday]}.*?Men.I(.*?)Men.II(.*)(${days[$wday - 1]}|Johannesgasse)/) {
+      if ($text =~ qr/Montag-Freitag.*?${days[$wday]}.*?Men.I(.*?)Men.II(.*)(${days[$wday + 1]}|Johannesgasse)/) {
          print cleanWhitespaces($1) . cleanWhitespaces($2);
       }
       else {
