@@ -9,6 +9,7 @@ use HTML::Entities;
 
 my @months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 my @days = qw(Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag Sonntag);
+my @days_short = qw(So Mo Di Mi Do Fr Sa So);
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 #print "$mday $months[$mon] $days[$wday]\n";
@@ -24,7 +25,7 @@ if ($res->is_success) {
    my $string_small = $res->content;
    $string_small =~ s/[\r\n\t\f\v]+//g;
    #print "$string_small\n";
-   if ($string_small =~ qr/$date.*?<span style="text-align: start;">(.*?)<\/span>\s*<br[^>]*>\s*<span style="text-align: start;">(.*?)<\/span>/) {
+   if ($string_small =~ qr/$date<[\s\S]*?>([A-Z][A-Za-z\-\& ]+?)<[\s\S]*?>([A-Z][A-Za-z\-\& ]+?)</) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
    }
    else {
@@ -62,6 +63,7 @@ if ($res->is_success) {
    my $pdf = CAM::PDF->new($res->content);
    my $text = $pdf->getPageText(1);
    $text =~ s/\s+/ /g;
+   $text =~ s/Donner stag/Donnerstag/g;
    #print "$text\n";
    if ($text =~ qr/Montag \- Freitag.*?$days[$wday].*?Men. I(.*?)Men. II(.*?)(${days[$wday + 1]}|Johannesgasse)/) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
