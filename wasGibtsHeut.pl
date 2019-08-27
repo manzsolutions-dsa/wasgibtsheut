@@ -25,7 +25,7 @@ if ($res->is_success) {
    my $string_small = $res->content;
    $string_small =~ s/[\r\n\t\f\v]+//g;
    #print "$string_small\n";
-   if ($string_small =~ qr/$date<[\s\S]*?>([A-Z][A-Za-z\-\& ]+?)<[\s\S]*?>([A-Z][A-Za-z\-\& ]+?)</) {
+   if ($string_small =~ qr/$date<[\s\S]*?>([A-Z][^<]+?)<[\s\S]*?>([A-Z][^<]+?)</) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
    }
    else {
