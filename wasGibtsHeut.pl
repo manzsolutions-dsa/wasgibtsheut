@@ -6,12 +6,13 @@ use warnings;
 use LWP::UserAgent;
 use CAM::PDF;
 use HTML::Entities;
+use Encode;
 
 my @months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 my @days = qw(Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag Sonntag);
 my @days_short = qw(So Mo Di Mi Do Fr Sa So);
 
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time + 86400);
 #print "$mday $months[$mon] $days[$wday]\n";
 
 my $ua = LWP::UserAgent->new;
@@ -24,6 +25,7 @@ if ($res->is_success) {
    my $date = sprintf("%02d.%02d.%04d", $mday, ($mon+1), ($year+1900));
    my $string_small = $res->content;
    $string_small =~ s/[\r\n\t\f\v]+//g;
+   $string_small =~ s/>\s+/>/g;
    #print "$string_small\n";
    if ($string_small =~ qr/$date<[\s\S]*?>([A-Z][^<]+?)<[\s\S]*?>([A-Z][^<]+?)</) {
       print cleanWhitespaces($1) . cleanWhitespaces($2);
@@ -66,12 +68,12 @@ if ($res->is_success) {
    $text =~ s/Donner stag/Donnerstag/g;
    #print "$text\n";
    if ($text =~ qr/Montag \- Freitag.*?$days[$wday].*?Men. I(.*?)Men. II(.*?)(${days[$wday + 1]}|Johannesgasse)/) {
-      print cleanWhitespaces($1) . cleanWhitespaces($2);
+      print cleanWhitespaces(encode('utf-8', $1)) . cleanWhitespaces(encode('utf-8', $2));
    }
    else {
       $text =~ s/\s+//g;
       if ($text =~ qr/Montag-Freitag.*?${days[$wday]}.*?Men.I(.*?)Men.II(.*)(${days[$wday + 1]}|Johannesgasse)/) {
-         print cleanWhitespaces($1) . cleanWhitespaces($2);
+         print cleanWhitespaces(encode('utf-8', $1)) . cleanWhitespaces(encode('utf-8', $2));
       }
       else {
          print "not found :(\n";
@@ -86,27 +88,24 @@ else {
 #josi
 $res = $ua->request(HTTP::Request->new(GET => "https://jonathan-sieglinde.com/mittags-speiseplan/"));
 if ($res->is_success) {
-   #print "\njosi\n";
-   my $url = decode_entities($res->content);
-   if ($url =~ qr/pdf-embedder url="(.*?)"/) {
+   print "\njosi\n";
+   my $url = $res->content;
+   if ($url =~ qr/pdf-embedder url=&quot;(.*?)&quot;/) {
       $res = $ua->request(HTTP::Request->new(GET => $1));
       if ($res->is_success) {
          my $pdf = CAM::PDF->new($res->content);
-         my $text = $pdf->getPageText(1);
+         my $text = encode('utf-8', $pdf->getPageText(1));
          #$text =~ s/\s+/ /g;
-         #print $text;
-      }
-      else {
-         $res = $ua->request(HTTP::Request->new(GET => sprintf("https://jonathan-sieglinde.com/wp-content/uploads/%04d/%02d/Mittags-Menüplan%d-%2d.pdf", ($year + 1900), ($mon + 1), ($mon + 1), ($year - 100))));
-         if ($res->is_success) {
-            my $pdf = CAM::PDF->new($res->content);
-            my $text = $pdf->getPageText(1);
-            #$text =~ s/\s+/ /g;
-            #print $text;
+         $text = getWeekText($text);
+         if ($text =~ qr/$days_short[$wday]:\s(.+)/) {
+            print "$1\n";
          }
          else {
-            print "Failed 2: ", $res->status_line, "\n";
+            print "not found :(\n";
          }
+      }
+      else {
+         print "Failed 2: ", $res->status_line, "\n";
       }
    }
 }
@@ -114,6 +113,17 @@ else {
    print "Failed 1: ", $res->status_line, "\n";
 }
 
+sub getWeekText {
+   my ($text) = @_;
+   if ($text =~ qr/(\d+)\.\d+\.-(\d+)\.\d+([\s\S]+)/) {
+      if ($mday > $1 && $mday < $2) {
+         return $3;
+      }
+      else {
+         return getWeekText($3);
+      }
+   }
+}
 
 sub cleanWhitespaces {
    my ($string) = @_;
