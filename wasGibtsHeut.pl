@@ -12,7 +12,8 @@ my @months = qw( Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec );
 my @days = qw(Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag Sonntag);
 my @days_short = qw(So Mo Di Mi Do Fr Sa So);
 
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time + 86400);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+#my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time + 86400);
 #print "$mday $months[$mon] $days[$wday]\n";
 
 my $ua = LWP::UserAgent->new;
@@ -97,8 +98,8 @@ if ($res->is_success) {
          my $text = encode('utf-8', $pdf->getPageText(1));
          #$text =~ s/\s+/ /g;
          $text = getWeekText($text);
-         if ($text =~ qr/$days_short[$wday]:\s(.+)/) {
-            print "$1\n";
+         if ($text =~ qr/$days_short[$wday]:\s(.+)\s ¬\s+.+\s(.+)/) {
+            print cleanWhitespaces("1: " . $1) . cleanWhitespaces("2: " . $2);
          }
          else {
             print "not found :(\n";
@@ -113,10 +114,12 @@ else {
    print "Failed 1: ", $res->status_line, "\n";
 }
 
+
 sub getWeekText {
    my ($text) = @_;
+   #print "$text\n";
    if ($text =~ qr/(\d+)\.\d+\.-(\d+)\.\d+([\s\S]+)/) {
-      if ($mday > $1 && $mday < $2) {
+      if ($mday >= $1 && $mday <= $2) {
          return $3;
       }
       else {
