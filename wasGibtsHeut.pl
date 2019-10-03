@@ -156,7 +156,7 @@ sub getWeekText {
          }
       }
       else {
-         if ($mday >= $1) {
+         if ($mday >= $1 || $mday <= $2) {
             return $3;
          }
          else {
