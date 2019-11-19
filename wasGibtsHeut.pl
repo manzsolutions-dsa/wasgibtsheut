@@ -116,32 +116,31 @@ else {
 
 
 #bettelstudent
-$res = $ua->request(HTTP::Request->new(GET => "https://www.bettelstudent.at"));
-if ($res->is_success) {
-   print "\nbettelstudent\n";
-   my $url = $res->content;
-   if ($url =~ qr/<a\s*href="([^"]*?)"[^\/]*?Wochenmenü/) {
-print $1 . "\n";
-      $res = $ua->request(HTTP::Request->new(GET => "https://www.bettelstudent.at" . $1));
-      if ($res->is_success) {
-         my $pdf = CAM::PDF->new($res->content);
-         my $text = encode('utf-8', $pdf->getPageText(1));
-         $text =~ s/\n/, /g;
-         if ($text =~ qr/$days[$wday], (.*?), , /) {
-            print cleanWhitespaces($1);
-         }
-         else {
-            print "not found :(\n";
-         }
-      }
-      else {
-         print "Failed 2: ", $res->status_line, "\n";
-      }
-   }
-}
-else {
-   print "Failed 1: ", $res->status_line, "\n";
-}
+#$res = $ua->request(HTTP::Request->new(GET => "https://www.bettelstudent.at"));
+#if ($res->is_success) {
+#   print "\nbettelstudent\n";
+#   my $url = $res->content;
+#   if ($url =~ qr/<a\s*href="([^"]*?)"[^\/]*?Wochenmenü/) {
+#      $res = $ua->request(HTTP::Request->new(GET => "https://www.bettelstudent.at" . $1));
+#      if ($res->is_success) {
+#         my $pdf = CAM::PDF->new($res->content);
+#         my $text = encode('utf-8', $pdf->getPageText(1));
+#         $text =~ s/\n/, /g;
+#         if ($text =~ qr/$days[$wday], (.*?), , /) {
+#            print cleanWhitespaces($1);
+#         }
+#         else {
+#            print "not found :(\n";
+#         }
+#      }
+#      else {
+#         print "Failed 2: ", $res->status_line, "\n";
+#      }
+#   }
+#}
+#else {
+#   print "Failed 1: ", $res->status_line, "\n";
+#}
 
 
 sub getWeekText {
