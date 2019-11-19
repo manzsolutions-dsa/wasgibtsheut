@@ -44,7 +44,7 @@ else {
 $res = $ua->request(HTTP::Request->new(GET => "https://www.1516brewingcompany.com/daily-special/"));
 if ($res->is_success) {
    print "\n1516\n";
-   my $date = sprintf("%02d.%02d", $mday, ($mon+1));
+   my $date = sprintf("%02d\\.%02d", $mday, ($mon+1));
    my $string_small = $res->content;
    $string_small =~ s/[\r\n\t\f\v]+//g;
    if ($string_small =~ qr/$date.*?<strong>(.*?)<\/strong>/) {
@@ -121,6 +121,7 @@ if ($res->is_success) {
    print "\nbettelstudent\n";
    my $url = $res->content;
    if ($url =~ qr/<a\s*href="([^"]*?)"[^\/]*?Wochenmenü/) {
+print $1 . "\n";
       $res = $ua->request(HTTP::Request->new(GET => "https://www.bettelstudent.at" . $1));
       if ($res->is_success) {
          my $pdf = CAM::PDF->new($res->content);
