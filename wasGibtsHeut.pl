@@ -146,21 +146,21 @@ else {
 sub getWeekText {
    my ($text) = @_;
    #print "$text\n";
-   if ($text =~ qr/(\d+)\.\d+\.-(\d+)\.\d+([\s\S]+)/) {
-      if ($1 < $2) {
-         if ($mday >= $1 && $mday <= $2) {
-            return $3;
+   if ($text =~ qr/(\d+)\.(\d+\.)?-(\d+)\.\d+([\s\S]+)/) {
+      if ($1 < $3) {
+         if ($mday >= $1 && $mday <= $3) {
+            return $4;
          }
          else {
-            return getWeekText($3);
+            return getWeekText($4);
          }
       }
       else {
-         if ($mday >= $1 || $mday <= $2) {
-            return $3;
+         if ($mday >= $1 || $mday <= $3) {
+            return $4;
          }
          else {
-            return getWeekText($3);
+            return getWeekText($4);
          }
       }
    }
