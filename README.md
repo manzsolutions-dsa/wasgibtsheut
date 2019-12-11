@@ -21,7 +21,7 @@ Kürbis-Mangold-Lasagne mit Grana
 Specklinsen mit Serviettenknödel
 
 1516
-Mittagsmenü inklusive Vorspeise. 2 courses for only
+Schweinenackensteak vom Grill auf Brioche-Toast mit Bacon Baked Beans, Cafe De Paris Butter & Pommes
 
 elissar
 Halloumi Salat mit Sesambrot
