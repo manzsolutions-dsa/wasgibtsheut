@@ -143,6 +143,23 @@ else {
 #}
 
 
+#bürgerliche brauerei
+$res = $ua->request(HTTP::Request->new(GET => "https://burgerlichebrauerei.at/mittagsmenu/"));
+if ($res->is_success) {
+   print "\nbürgi\n";
+   my $string_small = $res->content;
+   $string_small =~ s/[\r\n\t\f\v]+//g;
+   if ($string_small =~ qr/$days[$wday].*?nazov-jedla">([^<]+)<\/.*?nazov-jedla">([^<]+)<\/.*?nazov-jedla">([^<]+)<\/.*?nazov-jedla">([^<]+)<\//) {
+      print cleanWhitespaces($1) . cleanWhitespaces($2) . cleanWhitespaces($3) . cleanWhitespaces($4);
+   }
+   else {
+      print "not found :(\n";
+   }
+}
+else {
+   print "Failed: ", $res->status_line, "\n";
+}
+
 sub getWeekText {
    my ($text) = @_;
    #print "$text\n";
