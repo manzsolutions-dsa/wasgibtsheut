@@ -160,6 +160,29 @@ else {
    print "Failed: ", $res->status_line, "\n";
 }
 
+
+#vollpension
+$res = $ua->request(HTTP::Request->new(GET => "https://www.wasgibtsheut.at/was-gibt-s-heut/vollpension/"));
+if ($res->is_success) {
+   print "\nvollie\n";
+   my $date = sprintf("%02d.%02d.%04d", $mday, ($mon+1), ($year+1900));
+   my $string_small = $res->content;
+   $string_small =~ s/[\r\n\t\f\v]+//g;
+   $string_small =~ s/>\s+/>/g;
+   #print "$string_small\n";
+   if ($string_small =~ qr/$date<[\s\S]*?>([A-Z][^<]+?)<[\s\S]*?>([A-Z][^<]+?)</) {
+      print cleanWhitespaces($1) . cleanWhitespaces($2);
+   }
+   else {
+      print "not found :(\n";
+   }
+}
+else {
+   print "Failed: ", $res->status_line, "\n";
+}
+
+
+
 sub getWeekText {
    my ($text) = @_;
    #print "$text\n";
